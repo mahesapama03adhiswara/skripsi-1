@@ -7,7 +7,7 @@
 		<li>
 			<a href="index.php">
 				<i class="fa fa-home"></i>
-				<b>Website Pengelolaan Arsip Aktif BPKP Prov. Kalsel</b>
+				<b>Website Pengelolaan Arsip Inaktif BPKP Prov. Kalsel</b>
 			</a>
 		</li>
 	</ol>
@@ -18,6 +18,8 @@
 		<div class="box-header with-border">
 			<a href="?page=MyApp/add_arsip_aktif" title="Tambah Data" class="btn btn-primary">
 				<i class="glyphicon glyphicon-plus"></i> Tambah Data</a>
+			<a href="?page=print_arsipa" title="Cetak Data" class="btn btn-primary">
+				<i class="glyphicon glyphicon-print"></i> Print</a>
 
 		
 				
@@ -47,19 +49,26 @@
 							<th>Jumlah</th>
 							<th>Rak</th>
 							<th>Box</th>
-							<th>File</th>
+							<!-- <th>File</th> -->
 							<th>Aksi</th>
 						</tr>
 					</thead>	
 					<tbody>
 
 						<?php
-                  $no = 1;
-				  $bidang = $_SESSION['bidang'];
-                  $sql =  $koneksi->query("SELECT * from tb_arsip WHERE jenis='Aktif'"); 
-                  while ($data= $sql->fetch_assoc()) {
-					
-                ?>
+						$no = 1;
+						if ($data_level == "Admin"){
+							$sql =  $koneksi->query("SELECT * FROM tb_arsip,tb_bidang
+							WHERE tb_arsip.bidang = tb_bidang.id_bidang 
+							AND jenis='Aktif'");
+						}else{
+							$sql =  $koneksi->query("SELECT * FROM tb_arsip,tb_bidang
+							WHERE tb_arsip.bidang = tb_bidang.id_bidang 
+							AND jenis='Aktif' AND bidang='".$sesi['bidang']."'"); 
+						}
+						while ($data= $sql->fetch_assoc()){
+							
+						?>
 
 						<tr>
 							<td>
@@ -78,7 +87,7 @@
 								<?php echo $data['nama_arsip']; ?>
 							</td>
 							<td>
-								<?php echo $data['bidang']; ?>
+								<?php echo $data['nama_bidang']; ?>
 							</td>
 							<td>
 								<?php echo $data['tahun']; ?>
@@ -95,9 +104,9 @@
 							<td>
 								<?php echo $data['box']; ?>
 							</td>
-							<td>
-								 <img src="./admin/arsipa/images/<?php echo $data['foto']; ?>" width="100" height="100"> 
-							</td>
+							<!-- <td>
+								 <img src="./admin/arsipa/images/<?php echo $data['file']; ?>" width="100" height="100"> 
+							</td> -->
 							<td>
 								<a href="?page=MyApp/edit_arsip_aktif&kode=<?php echo $data['id_arsip']; ?>" title="Ubah"
 								 class="btn btn-success">
@@ -112,7 +121,6 @@
                   }
                 ?>
 					</tbody>
-
 				</table>
 			</div>
 		</div>

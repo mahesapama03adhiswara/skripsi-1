@@ -38,7 +38,7 @@ $html = '
     <br>
     <br>
 
-    <h3 align="center">LAPORAN DATA ARAIP AKTIF PADA BPPKP PROVINSI KALSEL</h3>
+    <h3 align="center">LAPORAN DATA ARSIP AKTIF PADA BPKP PROVINSI KALSEL</h3>
     <table width="100%" border="1" cellpading="10" cellspacing="0">
     <tr>
     <th>No</th>

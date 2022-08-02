@@ -1,21 +1,26 @@
 <?php
+	error_reporting(E_ALL^ (E_NOTICE | E_WARNING));
+    //KONEKSI DB
+    include "inc/koneksi.php";
+	
     //Mulai Sesion
     session_start();
-    if (isset($_SESSION["ses_nip"])==""){
-		header("location: login.php");
+    if ($_SESSION["ses_nip"]){
+		$user =$_SESSION['ses_nip'];
+        $sql = mysqli_query($koneksi,"SELECT * FROM tb_pengguna,tb_bidang
+		WHERE tb_pengguna.bidang = tb_bidang.id_bidang AND  
+		nip='$user'");
+		// $sql = $koneksi->query("SELECT * FROM  WHERE nip='$user'");
+        $sesi = mysqli_fetch_assoc($sql);
 
-    }else{
       $data_id = $_SESSION["ses_id"];
       $data_nama = $_SESSION["ses_nama"];
       $data_nip = $_SESSION["ses_nip"];
       $data_level = $_SESSION["ses_level"];
 	  $bidang = $_SESSION['bidang'];
 
-    }
-
-    //KONEKSI DB
-    include "inc/koneksi.php";
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -42,8 +47,17 @@
 	<!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
 	<link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css"> -->
 
+	<script data-require="moment.js@2.10.2" data-semver="2.10.2" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous"></script>
+	
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+	<!-- fullCalendar -->
+<script src="../bower_components/moment/moment.js"></script>
+<script src="../bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+<!-- Page specific script -->
 </head>
 
 <body class="hold-transition skin-green sidebar-mini">
@@ -102,12 +116,13 @@
 						?>
 						<!-- <div class="img-circle elevation-2"> -->
 						
+								<?php if ($data['foto'] == "" || $data['foto'] == null){
+									?>
+									echo '<img class="rounded float-right" src="./dist/img/'.$data['foto'].'" ">';
+								<?php }else{
+								?>
+									<img class="rounded float-right" src="Admin/pegawai/futu/<?= $sesi['foto']; ?>"/>
 								<?php
-								if ($data['foto'] != null){
-								// echo '<img class="rounded" height="500" width="500" src=".dist/img/ $data['foto'];"/>';
-								echo '<img class="rounded float-right" src="./dist/img/'.$data['foto'].'" ">';
-								} else {
-									echo '<img class="rounded float-right" src="dist/img/avatar.png"/>';
 								}
 								?>
 							<!-- </div>  -->
@@ -117,10 +132,16 @@
 					</div>
 					<div class="pull-left info">
 						<p>
-							<?php echo $data_nama; ?>
+							<?= $data_nama; ?>
 						</p>
 						<span class="label label-warning">
-							<?php echo $data_level; ?>
+							<?php
+								if ($data_level == "Admin"){
+									echo $data_level;
+								}else{
+									echo $data_level; echo " "; echo $sesi['nama_bidang'];
+								}
+							?>
 						</span>
 					</div>
 				</div>
@@ -158,28 +179,29 @@
 							</li>
 							<li>
 								<a href="?page=MyApp/data_arsip_inaktif">
-								<i class="fa-solid fa-circle-dot"></i>   Data Arsip Inaktif</a>
+								<i class="fa-solid fa-circle-dot"></i>   Data Arsip</a>
 							</li>
-							<li>
+							<!-- <li>
 								<a href="?page=MyApp/data_arsip_aktif">
 								<i class="fa-solid fa-circle-dot"></i>   Data Arsip Aktif</a>
-							</li>
+							</li> -->
 							<li>
-								<a href="?page=MyApp/data_mutasi">
-								<i class="fa-solid fa-circle-dot"></i>   Data Mutasi Arsip</a>
+								<a href="?page=data_bidang">
+								<i class="fa-solid fa-circle-dot"></i>   Data Bidang</a>
 							</li>
-							<li>
-								<a href="?page=MyApp/data_musnah">
-								<i class="fa-solid fa-circle-dot"></i>   Data Pemusnahan Arsip</a>
-							</li>
+							<!-- <li>
+								<a href="?page=data_retensi">
+								<i class="fa-solid fa-circle-dot"></i>   Data Retensi</a>
+							</li> -->
+							
 						</ul>
 					</li>
 
 
 					<li class="treeview">
 						<a href="#">
-						<i class="fa fa-shopping-cart"></i>
-							<span>Transaksi</span>
+						<i class="fa fa-book"></i>
+							<span>Transaksi Arsip</span>
 							<span class="pull-right-container">
 								<i class="fa fa-angle-left pull-right"></i>
 							</span>
@@ -187,15 +209,24 @@
 						<ul class="treeview-menu">
 						<li>
 							<a href="?page=peminjaman">
-							<i class="fa-solid fa-circle-dot"></i></i>Data Pinjam Arsip Inaktif</a>
+							<i class="fa-solid fa-circle-dot"></i></i>Data Pinjam</a>
 						</li>
 						<li>
-							<a href="?page=penggunaan_bahan">
-							<i class="fa-solid fa-circle-dot"></i></i>Data Pengembalian Arsip Inaktif</a>
+							<a href="?page=data_mutasi">
+							<i class="fa-solid fa-circle-dot"></i></i>Data Mutasi Arsip</a>
 						</li>
-						
-
-
+						<li>
+							<a href="?page=data_pindah">
+							<i class="fa-solid fa-circle-dot"></i></i>Data Pindah Arsip</a>
+						</li>
+						<li>
+							<a href="?page=data_musnah">
+							<i class="fa-solid fa-circle-dot"></i> Data Pemusnahan Arsip</a>
+						</li>
+						<!-- <li>
+							<a href="?page=pengembalian">
+							<i class="fa-solid fa-circle-dot"></i></i>Data Pengembalian Pinjam Arsip</a>
+						</li> -->
 		  				</ul>
 		  			</li>
 
@@ -209,29 +240,37 @@
 						</a>
 						<ul class="treeview-menu">
 							<li>
-								<a href="admin/pegawai/print_pegawai.php" target="blank">
+								<a class="nav-link" data-toggle="modal" data-target="#modal-peg">
 									<i class="fa-solid fa-circle-dot"></i></i>Data Pegawai</a>
 							</li>
 							<li>
-								<a href="admin/arsipi/print_arsip.php" target="blank">
+								<a class="nav-link" data-toggle="modal" data-target="#modal-arsip-inaktif">
 									<i class="fa-solid fa-circle-dot"></i></i>Data Arsip Inaktif</a>
 							</li>
 							<li>
-								<a href="admin/arsipa/print_arsip.php">
+								<a class="nav-link" data-toggle="modal" data-target="#modal-arsip-aktif">
 									<i class="fa-solid fa-circle-dot"></i></i>Data Arsip Aktif</a>
 							</li>
 							<li>
-								<a href="admin/peminjaman/print_peminjaman.php" target="blank">
+								<a class="nav-link" data-toggle="modal" data-target="#modal-mutasi">
 									<i class="fa-solid fa-circle-dot"></i></i>Data Mutasi Arsip</a>
 							</li>
 							<li>
-								<a href="admin/peminjaman/print_pengembalian.php" target="blank">
-									<i class="fa-solid fa-circle-dot"></i></i>Data Peminjaman</a>
+								<a class="nav-link" data-toggle="modal" data-target="#modal-pinjam">
+									<i class="fa-solid fa-circle-dot"></i></i>Data Peminjaman Arsip</a>
 							</li>
 							<li>
-								<a href="admin/peminjaman/print_pengembalian.php" target="blank">
-									<i class="fa-solid fa-circle-dot"></i></i>Data Pengembalian</a>
+								<a class="nav-link" data-toggle="modal" data-target="#modal-pengembalian">
+									<i class="fa-solid fa-circle-dot"></i></i>Data Pengembalian Arsip</a>
+							</li><li>
+								<a class="nav-link" data-toggle="modal" data-target="#modal-pindah">
+									<i class="fa-solid fa-circle-dot"></i></i>Data Pemindahan Arsip</a>
 							</li>
+							<li>
+								<a class="nav-link" data-toggle="modal" data-target="#modal-musnah">
+									<i class="fa-solid fa-circle-dot"></i></i>Data Pemusnahan Arsip </a>
+							</li>
+
 						</ul>
 					</li>
 
@@ -240,7 +279,7 @@
 					} elseif($data_level=="Pegawai"){
 					?>
 					<li class="treeview">
-						<a href="?page=petugas">
+						<a href="?page=pegawai">
 							<i class="fa fa-dashboard"></i>
 							<span>Dashboard</span>
 							<span class="pull-right-container">
@@ -249,18 +288,66 @@
 					</li>
 
 					<li class="treeview">
-						<a href="?page=petugas_peminjaman">
-							<i class="fa fa-refresh"></i>
-							<span>Peminjaman</span>
+						<a href="?page=MyApp/data_arsip_inaktif">
+							<i class="fa fa-folder"></i>
+							<span>Data Arsip</span>
 							<span class="pull-right-container">
 							</span>
 						</a>
 					</li>
 
+					<!-- <li class="treeview">
+						<a href="#">
+							<i class="fa fa-folder"></i>
+							<span>Kelola Data</span>
+							<span class="pull-right-container">
+								<i class="fa fa-angle-left pull-right"></i>
+							</span>
+						</a>
+						<ul class="treeview-menu">
+							<li>
+								<a href="?page=MyApp/data_arsip_inaktif">
+								<i class="fa-solid fa-circle-dot"></i>   Data Arsip Inaktif</a>
+							</li>
+							<li>
+								<a href="?page=MyApp/data_arsip_aktif">
+								<i class="fa-solid fa-circle-dot"></i>   Data Arsip Aktif</a>
+							</li>
+							<li>
+								<a href="?page=MyApp/data_mutasi">
+								<i class="fa-solid fa-circle-dot"></i>   Data Mutasi Arsip</a>
+							</li>
+							
+						</ul>
+					</li> -->
+
 					<li class="treeview">
 						<a href="#">
-							<i class="fa fa-book"></i>
-							<span>Log Data</span>
+							<i class="fa fa-folder"></i>
+							<span>Transaksi</span>
+							<span class="pull-right-container">
+								<i class="fa fa-angle-left pull-right"></i>
+							</span>
+						</a>
+						<ul class="treeview-menu">
+							<li>
+								<a href="?page=peminjaman">
+								<i class="fa-solid fa-circle-dot"></i>   Peminjaman</a>
+							</li>
+							<li>
+								<a href="?page=data_mutasi">
+								<i class="fa-solid fa-circle-dot"></i>   Mutasi</a>
+							</li>
+														
+						</ul>
+					</li>
+					
+					
+
+					<!-- <li class="treeview">
+						<a href="#">
+							<i class="fa fa-folder"></i>
+							<span>Laporan</span>
 							<span class="pull-right-container">
 								<i class="fa fa-angle-left pull-right"></i>
 							</span>
@@ -269,16 +356,18 @@
 
 							<li>
 								<a href="?page=log_pinjam">
-									<i class="fa fa-arrow-circle-o-down"></i>Peminjaman</a>
+									<i class="fa fa-arrow-circle-o-down"></i>Laporan Pegawai</a>
 							</li>
 							<li>
 								<a href="?page=log_kembali">
-									<i class="fa fa-arrow-circle-o-up"></i>Pengembalian</a>
+									<i class="fa fa-arrow-circle-o-up"></i>Laporan Peminjaman</a>
+							</li>
+							<li>
+								<a href="">
+									<i class="fa fa-arrow-circle-o-up"></i>Laporan Peminjaman</a>
 							</li>
 						</ul>
-					</li>
-
-					
+					</li> -->
 
 					<!-- <li class="treeview">
 						<a href="#">
@@ -308,14 +397,14 @@
 					
 					<li class="header">SETTING</li>
 
-				<li class="treeview">
+				<!-- <li class="treeview">
 					<a href="?page=MyApp/profil">
 						<i class="fa fa-user"></i>
 						<span>Profile</span>
 						<span class="pull-right-container">
 						</span>
 					</a>
-				</li>
+				</li> -->
 
 				<li>
 						<a href="logout.php" onclick="return confirm('Anda yakin keluar dari aplikasi ?')">
@@ -328,7 +417,10 @@
 
 			</section>
 			<!-- /.sidebar -->
+			
 		</aside>
+
+		
 
 		<!-- =============================================== -->
 
@@ -336,10 +428,12 @@
 		<div class="content-wrapper">
 			<!-- Content Header (Page header) -->
 			<!-- Main content -->
+			
 			<section class="content">
 				<?php 
       if(isset($_GET['page'])){
           $hal = $_GET['page'];
+		  
   
           switch ($hal) {
               //Klik Halaman Home Pengguna
@@ -378,7 +472,7 @@
               case 'MyApp/add_pegawai':
                   include "admin/pegawai/add_pegawai.php";
                   break;
-              case 'MyApp/edit_pegawai':
+              case 'edit_pegawai':
                   include "admin/pegawai/edit_pegawai.php";
                   break;
               case 'MyApp/del_pegawai':
@@ -398,6 +492,9 @@
               case 'MyApp/del_arsip_inaktif':
                   include "admin/arsipi/del_arsip.php";
 				  break;
+			// case 'download':
+            //       include "admin/arsipi/download.php";
+			// 	  break;
 
 				  //arsip Aktif
 				  case 'MyApp/data_arsip_aktif':
@@ -413,25 +510,126 @@
 					include "admin/arsipa/del_arsip.php";
 					break;
 
-				//sirkul
-              case 'peminjaman':
-                  include "admin/transaksi/peminjaman/data_peminjaman.php";
-                  break;
-              case 'add_peminjaman':
-                  include "admin/transaksi/peminjaman/add_peminjaman.php";
-                  break;
-              case 'kembali':
-                  include "admin/transaksi/peminjaman/kembali.php";
-				  break;
-
-				//log
-				case 'log_pinjam':
-					include "admin/log/log_pinjam.php";
+				//peminjaman
+				case 'add_peminjaman':
+					include "admin/transaksi/peminjaman/add_peminjaman.php";
 					break;
-				case 'log_kembali':
-					include "admin/log/log_kembali.php";
+				case 'peminjaman':
+					include "admin/transaksi/peminjaman/data_peminjaman.php";
+					break;
+				case 'validasi':
+					include "admin/transaksi/peminjaman/validasi_pinjam.php";
+					break;
+				case 'kembali':
+					include "admin/transaksi/peminjaman/kembali.php";
+					break;
+				case 'del_peminjaman':
+					include "admin/transaksi/peminjaman/del_peminjaman.php";
+					break;
+				case 'cetakbapinjam':
+					include "admin/laporan/ba_peminjaman1.php";
 					break;
 
+				// mutasi 
+				case 'data_mutasi':
+					include "admin/mutasi/data_mutasi.php";
+					break;
+				case 'add_mutasi':
+					include "admin/mutasi/add_mutasi.php";
+					break;
+				case 'del_mutasi':
+					include "admin/mutasi/del_mutasi.php";
+					break;
+				case 'detail_mutasi':
+					include "admin/mutasi/detail_arsip.php";
+					break;
+				case 'edit_mutasi':
+					include "admin/mutasi/edit_mutasi.php";
+					break;
+				case 'validasi_mut':
+					include "admin/mutasi/validasi_mut.php";
+					break;
+				case 'cetakbamutasi':
+					include "admin/laporan/ba_mutasi.php";
+					break;
+
+
+				//data retensi
+				case 'data_retensi':
+					include "admin/retensi/data_retensi.php";
+					break;
+				case 'edit_retensi':
+					include "admin/retensi/ubah_retensi.php";
+					break;
+				case 'del_retensi':
+					include "admin/retensi/hapus_retensi.php";
+					break;
+				case 'add_retensi':
+					include "admin/retensi/hapus_retensi.php";
+					break;
+			
+
+				//pemindahan
+				case 'data_pindah':
+					include "admin/pemindahan/data_pemindahan.php";
+					break;
+				case 'edit_pindah':
+					include "admin/pemindahan/edit_pemindahan.php";
+					break;
+				case 'add_pindah':
+					include "admin/pemindahan/add_pemindahan.php";
+					break;
+
+				//bidang
+				case 'data_bidang':
+					include "admin/bidang/data_bidang.php";
+					break;
+				case 'edit_bidang':
+					include "admin/bidang/ubah_bidang.php";
+					break;
+				case 'del_bidang':
+					include "admin/bidang/hapus_bidang.php";
+					break;
+				case 'add_bidang':
+					include "admin/bidang/add_bidang.php";
+					break;
+				
+				// pemusnahan
+				case 'data_musnah':
+					include "admin/pemusnahan/data_pemusnahan.php";
+					break;
+				case 'edit_musnah':
+					include "admin/pemusnahan/edit_pemusnahan.php";
+					break;
+				case 'add_musnah':
+					include "admin/pemusnahan/add_pemusnahan.php";
+					break;
+
+				//cetak semuanya 
+				case 'print_pegawai':
+					include "admin/laporan/all/lap_pegawai.php";
+					break;
+				case 'print_arsipi':
+					include "admin/laporan/all/lap_arsipi.php";
+					break;
+				case 'print_arsipa':
+					include "admin/laporan/all/lap_arsipa.php";
+					break;
+				case 'print_mutasi':
+					include "admin/laporan/all/lap_mutasi.php";
+					break;
+				case 'print_pemindahan':
+					include "admin/laporan/all/lap_pemindahan.php";
+					break;
+				case 'print_peminjaman':
+					include "admin/laporan/all/lap_peminjaman.php";
+					break;
+				case 'print_pemusnahan':
+					include "admin/laporan/all/lap_pemusnahan.php";
+					break;
+				case 'print_pengembalian':
+					include "admin/laporan/all/lap_pengembalian.php";
+					break;
 				
 
 
@@ -459,7 +657,6 @@
     ?>
 
 
-
 			</section>
 			<!-- /.content -->
 		</div>
@@ -469,7 +666,7 @@
 		<footer class="main-footer">
 			<div class="pull-right hidden-xs">
 			</div>
-			<center><strong>Copyright &copy; Nur Azizah Rizali
+			<center><strong>Copyright &copy; BPKP@2022
 		</footer>
 		<div class="control-sidebar-bg"></div>
 
@@ -492,11 +689,25 @@
 		<script src="dist/js/demo.js"></script>
 		<!-- page script -->
 
+		<!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script> -->
+
 
 		<script>
+			$(document).ready( function () {
+				$('#myTable').DataTable();
+			} );
 			$(function() {
 				$("#example1").DataTable();
-				$('#example2').DataTable({
+				$("#example2").DataTable();
+				$("#example3").DataTable();
+				$("#example4").DataTable();
+				$("#example5").DataTable();
+				$("#example6").DataTable();
+				$("#example7").DataTable();
+				$("#example8").DataTable();
+				$("#example9").DataTable();
+				$("#example0").DataTable();
+				$('#example10').DataTable({
 					"paging": true,
 					"lengthChange": false,
 					"searching": false,
@@ -516,3 +727,445 @@
 </body>
 
 </html>
+
+<?php  
+    }else{
+        header("location:login.php");
+    }
+?>
+
+
+	<div class="modal fade" id="modal-peg">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_pegawai.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang ");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                   <!-- <label for="">BULAN</label>
+               
+               <select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  
+                
+                  </select>
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control"> -->
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	
+	  <div class="modal fade" id="modal-arsip-inaktif">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_arsipi.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                   <label for="">BULAN</label>
+               
+               	<!-- <select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select> -->
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-arsip-aktif">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_arsipa.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                   <label for="">BULAN</label>
+               
+               	<!-- <select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select> -->
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-mutasi">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_mutasi.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                <label for="">BULAN</label>
+               	<select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-pinjam">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_peminjaman.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                <label for="">BULAN</label>
+               	<select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-pengembalian">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_pengembalian.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                <label for="">BULAN</label>
+               	<select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-pindah">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_pindah.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                <label for="">BULAN</label>
+               	<select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                  <label for="">TAHUN</label>
+                  <input type="text" name="tahun" class="form-control">
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+	  <div class="modal fade" id="modal-musnah">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Pilih Bidang</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="admin/laporan/lap_pemusnahan.php"method="POST">
+                <label for="">Bidang</label>
+                <select name="id_bidang"class="form-control" >
+                      <option value="">-->PILIH BIDANG<--</option>
+                      <?php
+                       $sql= mysqli_query($koneksi,"SELECT * FROM tb_bidang");
+                       while ($data= mysqli_fetch_array($sql)){
+                         echo "<option value='$data[id_bidang]'>$data[nama_bidang]</option>";
+                       }
+                      ?>
+                   </select>
+               
+                <!-- <label for="">BULAN</label>
+               	<select class="form-control" name="bulan" id="">
+                    <option value="">-- PILIH BULAN --</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                  <label for="">TAHUN</label> -->
+                  <!-- <input type="text" name="tahun" class="form-control"> -->
+             
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Show Data</button>
+            </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>

@@ -35,7 +35,22 @@
 					<div class="box-body">
 						<div class="form-group">
 							<label>Kode Klasifikasi</label>
-							<input type="text" name="kode_klasifikasi" id="kode_klasifikasi" class="form-control" placeholder="Kode Klasifikasi">
+							<select name="kode_klasifikasi" id="kode_klasifikasi" class="form-control select2" style="width: 100%;">
+								<option selected="selected">-- Pilih --</option>
+								<?php
+								
+								// ambil data dari database
+								$query = "select * from tb_retensi";
+								$hasil = mysqli_query($koneksi, $query);
+								while ($row = mysqli_fetch_array($hasil)) {
+								?>
+								<option value="<?php echo $row['kode_klasifikasi'] ?>">
+									<?php echo $row['kode_klasifikasi'] ?>
+								</option>
+								<?php
+								}
+								?>
+							</select>
 						</div>
 
 						<div class="form-group">
@@ -56,13 +71,20 @@
 						<div class="form-group">
 							<label>Bidang</label>
 							<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
-							<option value="">-- Pilih --</option>
-							<option value="TU">TU</option>
-							<option value="IPP">IPP</option>
-							<option value="AN">AN</option>
-							<option value="Investigasi">Investigasi</option>
-							<option value="P3A">P3A</option>
-							<option value="APD">APD</option>
+							<option selected="selected">-- Pilih --</option>
+							<?php
+							
+							// ambil data dari database
+							$query = "select * from tb_bidang";
+							$hasil = mysqli_query($koneksi, $query);
+							while ($row = mysqli_fetch_array($hasil)) {
+							?>
+							<option value="<?php echo $row['id_bidang'] ?>">
+							<?php echo $row['nama_bidang'] ?>
+							</option>
+							<?php
+							}
+							?>
 							</select>
 						</div>
 
@@ -82,7 +104,7 @@
 						</div>
 
 						<div class="form-group">
-							<label>Jumlah</label>
+							<label>Tahun</label>
 							<input type="text" name="jumlah" id="jumlah" class="form-control" placeholder="Jumlah Arsip">
 						</div>
 
@@ -96,19 +118,19 @@
 							<input type="text" name="box" id="box" class="form-control" placeholder="Box Arsip">
 						</div>
 
-						<div class="form-group">
-							<label>Foto</label>
+						<div hidden class="form-group">
+							<label>File</label>
 							<input type="file" name="foto" id="foto">
 						</div>
 
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label>Jenis File</label>
 							<select name="jenis" id="jenis" class="form-control select2" style="width: 100%;">
 							<option value="">-- Pilih --</option>
 							<option value="Aktif">Aktif</option>
 							<option value="Inaktif">Inaktif</option>
 							</select>
-						</div>
+						</div> -->
 						
 					</div>
 					<!-- /.box-body -->
@@ -126,8 +148,10 @@
 
     if (isset ($_POST['Simpan'])){
 		
+		$jenis = 'Aktif';
+		
 		// $image = addslashes(file_get_contents($_FILES['gambar']['tmp_name']));
-		$dir = "./admin/arsipa/images/";
+		$dir = "./admin/arsipa/file/";
 		$nama_file = $_FILES['foto']['name'];
 		$nama_file_tmp = $_FILES['foto']['tmp_name'];
 		$ext = explode(".", $nama_file);
@@ -137,7 +161,7 @@
 		$query;
 		
 		$$bidang = $_SESSION['bidang'];
-        $sql_simpan = "INSERT INTO tb_arsip (kode_klasifikasi,no_st,no_laporan,nama_arsip,bidang,tahun,tingkat_keaslian,jummlah,rak,box,jenis) VALUES (
+        $sql_simpan = "INSERT INTO tb_arsip (kode_klasifikasi,no_st,no_laporan,nama_arsip,bidang,tahun,tingkat_keaslian,jumlah,rak,box,jenis,foto) VALUES (
            '".$_POST['kode_klasifikasi']."',	
           '".$_POST['no_st']."',
           '".$_POST['no_laporan']."',
@@ -148,9 +172,8 @@
 		  '".$_POST['jumlah']."',
 		  '".$_POST['rak']."',
 		  '".$_POST['box']."',
-		  '".$_POST['jenis']."',
-          '".$gantiNama."',
-          '".$bidang."','Arsip')";
+		  '".$jenis."',
+          '".$gantiNama."')";
 		
         $query_simpan = mysqli_query($koneksi, $sql_simpan);
         mysqli_close($koneksi);

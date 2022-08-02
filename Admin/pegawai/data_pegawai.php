@@ -7,7 +7,7 @@
 		<li>
 			<a href="index.php">
 				<i class="fa fa-home"></i>
-				<b>Data Pegawai BPKP Provinsi Kalsel</b>
+				<b>Website Pengelolaan Arsip Inaktif BPKP Prov. Kalsel</b>
 			</a>
 		</li>
 	</ol>
@@ -18,21 +18,23 @@
 		<div class="box-header with-border">
 			<a href="?page=MyApp/add_pegawai" title="Tambah Data" class="btn btn-primary">
 				<i class="glyphicon glyphicon-plus"></i> Tambah Data Pegawai</a>
+			<a href="?page=print_pegawai" title="Cetak Data" class="btn btn-primary">
+				<i class="glyphicon glyphicon-print"></i> Print</a>
 			<div class="box-tools pull-right">
 				<button type="button" class="btn btn-box-tool" data-widget="collapse">
 					<i class="fa fa-minus"></i>
 				</button>
-				<button type="button" class="btn btn-box-tool" data-widget="remove">
-					<i class="fa fa-remove"></i>
-				</button>
+				
 			</div>
 		</div>
 		<!-- /.box-header -->
 		<div class="box-body">
 			<div class="table-responsive">
-				<table id="example1" class="table table-bordered table-striped">
+                    <table class="table table-striped display" id="myTable">
 					<thead>
 						<tr>
+							<th>No.</th>
+							<th>Foto</th>
 							<th>NIP</th>
 							<th>Nama</th>
 							<th>Jenis Kelamin</th>
@@ -41,16 +43,36 @@
 							<th>Email</th>
 							<th>No HP</th>
 							<th>Alamat</th>
+							<th>Aksi</th>
 						</tr>
 					</thead>
 					<tbody>
 
 						<?php
-                  $sql = $koneksi->query("SELECT * from tb_pengguna");
+						 $no = 1;
+                  $sql = $koneksi->query("SELECT * from tb_pengguna p, tb_bidang b, tb_jabatan x
+				  WHERE p.bidang = b.id_bidang
+				  AND p.jabatan = x.id_jabatan
+				  ");
                   while ($data= $sql->fetch_assoc()) {
                 ?>
 
 						<tr>
+							<td>
+								<?php echo $no++; ?>
+							</td>
+							<td>
+								<?php if ($data['foto'] == "" || $data['foto'] == null){
+									?>
+								
+								<img src="Admin/pegawai/futu/no-image.png" alt="" width="100px"  height="auto">
+								<?php }else{
+								?>
+								<img src="Admin/pegawai/futu/<?= $data['foto']; ?>" alt="" width="100px"  height="auto">
+								<?php
+								}
+								?>
+							</td>
 							<td>
 								<?php echo $data['nip']; ?>
 							</td>
@@ -61,10 +83,10 @@
 								<?php echo $data['jenkel']; ?>
 							</td>
 							<td>
-								<?php echo $data['bidang']; ?>
+								<?php echo $data['nama_bidang']; ?>
 							</td>
 							<td>
-								<?php echo $data['jabatan']; ?>
+								<?php echo $data['nama_jabatan']; ?>
 							</td>
 							<td>
 								<?php echo $data['email']; ?>
@@ -77,7 +99,7 @@
 							</td>
 
 							<td>
-								<a href="?page=MyApp/edit_pegawai&kode=<?php echo $data['nip']; ?>" title="Ubah"
+								<a href="?page=edit_pegawai&kode=<?php echo $data['nip']; ?>" title="Ubah"
 								 class="btn btn-success">
 									<i class="glyphicon glyphicon-edit"></i>
 								</a>

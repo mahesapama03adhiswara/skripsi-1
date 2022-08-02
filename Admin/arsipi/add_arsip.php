@@ -35,7 +35,22 @@
 					<div class="box-body">
 						<div class="form-group">
 							<label>Kode Klasifikasi</label>
-							<input type="text" name="kode_klasifikasi" id="kode_klasifikasi" class="form-control" placeholder="Kode Klasifikasi">
+							<select name="kode_klasifikasi" id="kode_klasifikasi" class="form-control select2" style="width: 100%;">
+								<option selected="selected">-- Pilih --</option>
+								<?php
+								$bidang = $_SESSION['bidang'];
+								// ambil data dari database
+								$query = "select * from tb_retensi";
+								$hasil = mysqli_query($koneksi, $query);
+								while ($row = mysqli_fetch_array($hasil)) {
+								?>
+								<option value="<?php echo $row['kode_klasifikasi'] ?>">
+									<?php echo $row['kode_klasifikasi'] ?>
+								</option>
+								<?php
+								}
+								?>
+							</select>
 						</div>
 
 						<div class="form-group">
@@ -56,13 +71,21 @@
 						<div class="form-group">
 							<label>Bidang</label>
 							<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
-							<option value="">-- Pilih --</option>
-							<option value="TU">TU</option>
-							<option value="IPP">IPP</option>
-							<option value="AN">AN</option>
-							<option value="Investigas">Investigas</option>
-							<option value="P3A">P3A</option>
-							<option value="Asli dan Copy">APD</option>
+								<option selected="selected">-- Pilih --</option>
+								<?php
+								
+								// ambil data dari database
+								$query = "select * from tb_bidang";
+								$hasil = mysqli_query($koneksi, $query);
+								while ($row = mysqli_fetch_array($hasil)) {
+								?>
+								<option value="<?php echo $row['id_bidang'] ?>">
+									<?php echo $row['nama_bidang'] ?>
+								</option>
+								<?php
+								}
+								?>
+							
 							</select>
 						</div>
 
@@ -96,19 +119,19 @@
 							<input type="text" name="box" id="box" class="form-control" placeholder="Box Arsip">
 						</div>
 
-						<div class="form-group">
-							<label>Foto</label>
-							<input type="file" name="foto" id="foto">
+						<div  class="form-group">
+							<label>File</label>
+							<input type="file" name="photo" id="photo">
 						</div>
 
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label>Jenis File</label>
 							<select name="jenis" id="jenis" class="form-control select2" style="width: 100%;">
 							<option value="">-- Pilih --</option>
 							<option value="Aktif">Aktif</option>
 							<option value="Inaktif">Inaktif</option>
 							</select>
-						</div>
+						</div> -->
 						
 					</div>
 					<!-- /.box-body -->
@@ -125,19 +148,39 @@
 <?php
 
     if (isset ($_POST['Simpan'])){
+		$jenis = 'Inaktif';
+		$status = 'TERSEDIA';
+		$tempat = 'Banjarbaru';
 		
+		$temp = "Admin/arsipi/file/";
+		// if (!empty($_FILES['photo']['tmp_name'])) {
+			$fileupload     = $_FILES['photo']['tmp_name'];
+			$ImageName      = $_FILES['photo']['name'];
+			$acak           = rand(11111111, 99999999);
+			$ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+			$ImageExt       = str_replace('.','',$ImageExt);
+			$ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+			$NewImageName   = str_replace(' ', '', $acak.'.'.$ImageExt);
+			$photo          = $NewImageName;
+			move_uploaded_file($fileupload, $temp.$NewImageName);
+		// } else {
+		// 	if($jeniskelamin=="Wanita"){
+		// 		$photo = "—Pngtree—vector female student icon_3787628.png";
+		// 	}else{$photo = "—Pngtree—business male icon vector_4187852.png";}
+		// }
+
 		// $image = addslashes(file_get_contents($_FILES['gambar']['tmp_name']));
-		$dir = "./admin/arsipi/images/";
-		$nama_file = $_FILES['foto']['name'];
-		$nama_file_tmp = $_FILES['foto']['tmp_name'];
-		$ext = explode(".", $nama_file);
-		$gantiNama = round(microtime(true)) . "." . end($ext);
-		$dirUpload = "./admin/arsipi/images/";
-		move_uploaded_file($nama_file_tmp, $dir . $gantiNama);
-		$query;
+		// $dir = "./admin/arsipi/file/";
+		// $nama_file = $_FILES['photo']['name'];
+		// $nama_file_tmp = $_FILES['photo']['tmp_name'];
+		// $ext = explode(".", $nama_file);
+		// $gantiNama = round(microtime(true)) . "." . end($ext);
+		// $dirUpload = "./admin/arsipi/file/";
+		// move_uploaded_file($nama_file_tmp, $dir . $gantiNama);
+		// $query;
 		
-		$bidang = $_SESSION['bidang'];
-        $sql_simpan = "INSERT INTO tb_arsip (kode_klasifikasi,no_st,no_laporan,nama_arsip,bidang,tahun,tingkat_keaslian,jummlah,rak,box,jenis) VALUES (
+		
+        $sql_simpan = "INSERT INTO tb_arsip (kode_klasifikasi,no_st,no_laporan,nama_arsip,bidang,tahun,tingkat_keaslian,jumlah,rak,box,status,jenis,file,tempat) VALUES (
            '".$_POST['kode_klasifikasi']."',	
           '".$_POST['no_st']."',
           '".$_POST['no_laporan']."',
@@ -148,9 +191,10 @@
 		  '".$_POST['jumlah']."',
 		  '".$_POST['rak']."',
 		  '".$_POST['box']."',
-		  '".$_POST['jenis']."',
-          '".$gantiNama."',
-          '".$bidang."','Arsip')";
+		  '".$status."',
+		  '".$jenis."',
+		  '".$photo."',
+		  '".$tempat."')";
 		
         $query_simpan = mysqli_query($koneksi, $sql_simpan);
         mysqli_close($koneksi);
@@ -175,3 +219,4 @@
     }
   }
     
+								

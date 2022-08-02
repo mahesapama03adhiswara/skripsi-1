@@ -45,38 +45,45 @@
 
 						<div class="form-group">
 							<label>Kode Klasifikasi</label>
-							<input type='text' class="form-control" name="kode_klasifikasi" value="<?php echo $data_cek['kode_klasifikasi']; ?>"
+							<input type="text"' class="form-control" name="kode_klasifikasi" value="<?php echo $data_cek['kode_klasifikasi']; ?>"
 							/>
 						</div>
 
 						<div class="form-group">
 							<label>No. ST</label>
-							<input type='text' class="form-control" name="no_st" value="<?php echo $data_cek['no_st']; ?>"
+							<input type="text" class="form-control" name="no_st" value="<?php echo $data_cek['no_st']; ?>"
 							/>
 						</div>
 
 						<div class="form-group">
 							<label>No. laporan</label>
-							<input type='text' class="form-control" name="no_laporan" value="<?php echo $data_cek['no_laporan']; ?>"
+							<input type="text" class="form-control" name="no_laporan" value="<?php echo $data_cek['no_laporan']; ?>"
 							/>
 						</div>
 
 						<div class="form-group">
 							<label>Uraian Informasi Arsip</label>
-							<input type='text' class="form-control" name="nama_arsip" value="<?php echo $data_cek['nama_arsip']; ?>"
+							<input type="text" class="form-control" name="nama_arsip" value="<?php echo $data_cek['nama_arsip']; ?>"
 							/>
 						</div>
 
-						<div class="form-group">
-							<label>Bidang</label>
-							<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
-							<option value="">-- Pilih --</option>
-							<option value="TU">TU</option>
-							<option value="IPP">IPP</option>
-							<option value="AN">AN</option>
-							<option value="Investigas">Investigas</option>
-							<option value="P3A">P3A</option>
-							<option value="APD">APD</option>
+						<div class="form-group"> 
+							<label> Bidang </label>
+						<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
+								<option selected="selected">-- Pilih --</option>
+								<?php
+								
+								// ambil data dari database
+								$query = "select * from tb_bidang";
+								$hasil = mysqli_query($koneksi, $query);
+								while ($row = mysqli_fetch_array($hasil)) {
+								?>
+								<option value="<?php echo $row['id'] ?>">
+									<?php echo $row['nama_bidang'] ?>
+								</option>
+								<?php
+								}
+								?>
 							</select>
 						</div>
 
@@ -89,16 +96,16 @@
 						<div class="form-group">
 							<label>Tingkat Keaslian </label>
 							<select name="tingkat_keaslian" id="tingkat_keaslian" class="form-control select2" style="width: 100%;">
-							<option value="">-- Pilih --</option>
+							<option value=""><?php echo $data_cek['tingkat_keaslian']; ?></option>
 							<option value="COPY">COPY</option>
-							<option value="ASLI">ASli</option>
+							<option value="ASLI">ASlI</option>
 							<option value="Asli dan Copy">Asli dan Copy</option>
 							</select>
 						</div>
 
 						<div class="form-group">
 							<label>jumlah </label>
-							<input type='number' class="form-control" name="jumlah" value="<?php echo $data_cek['jumlah']; ?>"
+							<input type="number" class="form-control" name="jumlah" value="<?php echo $data_cek['jumlah']; ?>"
 							/>
 						</div>
 
@@ -115,10 +122,10 @@
 						</div>
 						
 
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label>Foto</label>
 							<input type="file" name="gambar" id="gambar">
-						</div>
+						</div> -->
 					</div>
 					<!-- /.box-body -->
 

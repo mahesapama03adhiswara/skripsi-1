@@ -1,6 +1,8 @@
 <?php
-if(isset($_GET['kode'])){
-            $sql_hapus = "DELETE FROM tb_pegawai WHERE nip='".$_GET['kode']."'";
+
+$id = $_GET['kode'];
+if(isset($id)){
+            $sql_hapus = "DELETE FROM tb_pengguna WHERE nip='$id'";
             $query_hapus = mysqli_query($koneksi, $sql_hapus);
 
             if ($query_hapus) {

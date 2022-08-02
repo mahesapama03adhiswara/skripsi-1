@@ -68,16 +68,23 @@
 				</div>
 
 				<div class="form-group">
-					<label>Bidang</label>
-					<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
-					<option value="">-- Pilih --</option>
-					<option value="TU">TU</option>
-					<option value="IPP">IPP</option>
-					<option value="AN">AN</option>
-					<option value="Investigas">Investigas</option>
-					<option value="P3A">P3A</option>
-					<option value="APD">APD</option>
-					</select>
+					<label for="">Bidang</label>
+				<select name="bidang" id="bidang" class="form-control select2" style="width: 100%;">
+								<option selected="selected">-- Pilih --</option>
+								<?php
+								
+								// ambil data dari database
+								$query = "select * from tb_bidang";
+								$hasil = mysqli_query($koneksi, $query);
+								while ($row = mysqli_fetch_array($hasil)) {
+								?>
+								<option value="<?php echo $row['id'] ?>">
+									<?php echo $row['nama_bidang'] ?>
+								</option>
+								<?php
+								}
+								?>
+							</select>
 				</div>
 
 				<div class="form-group">
@@ -86,7 +93,7 @@
 					/>
 				</div>
 
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label>Tingkat Keaslian </label>
 					<select name="tingkat_keaslian" id="tingkat_keaslian" class="form-control select2" style="width: 100%;">
 					<option value="">-- Pilih --</option>
@@ -94,15 +101,15 @@
 					<option value="ASLI">ASli</option>
 					<option value="Asli dan Copy">Asli dan Copy</option>
 					</select>
-				</div>
+				</div> -->
 
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label>jumlah </label>
 					<input type='number' class="form-control" name="jumlah" value="<?php echo $data_cek['jumlah']; ?>"
 					/>
-				</div>
+				</div> -->
 
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label>Rak </label>
 					<input type="text" class="form-control" name="rak" value="<?php echo $data_cek ['rak']; ?>"
 					/>
@@ -112,12 +119,12 @@
 					<label>Box </label>
 					<input type="text" class="form-control" name="box" value="<?php echo $data_cek ['box']; ?>"
 					/>
-				</div>
+				</div> -->
 
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label>Foto</label>
 					<input type="file" name="gambar" id="gambar">
-				</div>
+				</div> -->
 				</div>
 				<!-- /.box-body -->
 
