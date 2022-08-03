@@ -139,7 +139,7 @@
 								<?php echo $data['box']; ?>
 							</td>
 							<td>
-								<a href="download.php?filename=<?php echo $data['file']; ?>"><?php echo $data['file']; ?></a>
+								<a href="?page=MyApp/download&filename=<?php echo $data['file']; ?>"><?php echo $data['file']; ?></a>
 								<!-- <a href="download.php?filename=<?=$data['file']?>">Download</a> -->
 							</td>
 							<!-- <td>
@@ -154,6 +154,7 @@
 								class="btn btn-warning">
 								<i class="glyphicon glyphicon-hand-right"></i>
 								</a>
+							
 								<?php } ?>
 								<?php 
 								if ($data_level !="Pegawai"){

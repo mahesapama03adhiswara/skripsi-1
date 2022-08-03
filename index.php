@@ -492,6 +492,9 @@
               case 'MyApp/del_arsip_inaktif':
                   include "admin/arsipi/del_arsip.php";
 				  break;
+			 case 'MyApp/download':
+					include "admin/arsipi/download.php";
+					break;
 			// case 'download':
             //       include "admin/arsipi/download.php";
 			// 	  break;
